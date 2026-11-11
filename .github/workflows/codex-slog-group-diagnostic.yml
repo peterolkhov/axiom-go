@@ -1,0 +1,54 @@
+name: Codex slog group BEFORE diagnostic
+on:
+  push:
+    branches: [codex/diagnose-slog-groups]
+permissions:
+  contents: read
+jobs:
+  reproduce-before:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      GOTOOLCHAIN: local
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          repository: axiomhq/axiom-go
+          ref: 49b3101ae7b78c2a334276747e06dbed191c7f6e
+          persist-credentials: false
+      - uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff
+        with:
+          go-version: "1.26.0"
+          cache: false
+      - name: Add bounded public diagnostic fixture only
+        run: |
+          python - <<'PY'
+          import base64
+          from pathlib import Path
+          p=Path("codex_diagnostic/diagnostic_group_scope_test.go")
+          assert not p.exists()
+          p.parent.mkdir()
+          p.write_bytes(base64.b64decode("cGFja2FnZSBzbG9nX3Rlc3QKCmltcG9ydCAoCiAgICAiYnl0ZXMiCiAgICAiZW5jb2RpbmcvanNvbiIKICAgICJmbXQiCiAgICAiaW8iCiAgICAibG9nL3Nsb2ciCiAgICAibmV0L2h0dHAiCiAgICAibmV0L2h0dHAvaHR0cHRlc3QiCiAgICAicmVmbGVjdCIKICAgICJzeW5jIgogICAgInRlc3RpbmciCiAgICAidGltZSIKCiAgICBhZGFwdGVyICJnaXRodWIuY29tL2F4aW9taHEvYXhpb20tZ28vYWRhcHRlcnMvc2xvZyIKICAgICJnaXRodWIuY29tL2F4aW9taHEvYXhpb20tZ28vYXhpb20iCiAgICAiZ2l0aHViLmNvbS9rbGF1c3Bvc3QvY29tcHJlc3MvenN0ZCIKKQoKZnVuYyBUZXN0RGlhZ25vc3RpY0dyb3VwU2NvcGVzKHQgKnRlc3RpbmcuVCkgewogICAgdmFyIG11IHN5bmMuTXV0ZXgKICAgIHZhciBldmVudHMgW11tYXBbc3RyaW5nXWFueQogICAgdmFyIHJlY2VpdmVyRXJyIGVycm9yCiAgICBzcnYgOj0gaHR0cHRlc3QuTmV3U2VydmVyKGh0dHAuSGFuZGxlckZ1bmMoZnVuYyh3IGh0dHAuUmVzcG9uc2VXcml0ZXIsIHIgKmh0dHAuUmVxdWVzdCkgewogICAgICAgIGZhaWwgOj0gZnVuYyhlcnIgZXJyb3IpIHsKICAgICAgICAgICAgbXUuTG9jaygpCiAgICAgICAgICAgIHJlY2VpdmVyRXJyID0gZXJyCiAgICAgICAgICAgIG11LlVubG9jaygpCiAgICAgICAgICAgIHcuV3JpdGVIZWFkZXIoaHR0cC5TdGF0dXNCYWRSZXF1ZXN0KQogICAgICAgIH0KICAgICAgICBpZiByLlVSTC5QYXRoICE9ICIvdjEvZGF0YXNldHMvdGVzdC9pbmdlc3QiIHsKICAgICAgICAgICAgZmFpbChmbXQuRXJyb3JmKCJ1bmV4cGVjdGVkIGxvY2FsIHBhdGggJXEiLCByLlVSTC5QYXRoKSkKICAgICAgICAgICAgcmV0dXJuCiAgICAgICAgfQogICAgICAgIHpyLCBlcnIgOj0genN0ZC5OZXdSZWFkZXIoci5Cb2R5KQogICAgICAgIGlmIGVyciAhPSBuaWwgeyBmYWlsKGVycik7IHJldHVybiB9CiAgICAgICAgZGVmZXIgenIuQ2xvc2UoKQogICAgICAgIGRlYyA6PSBqc29uLk5ld0RlY29kZXIoenIpCiAgICAgICAgZm9yIHsKICAgICAgICAgICAgdmFyIGV2ZW50IG1hcFtzdHJpbmddYW55CiAgICAgICAgICAgIGVyciA6PSBkZWMuRGVjb2RlKCZldmVudCkKICAgICAgICAgICAgaWYgZXJyID09IGlvLkVPRiB7IGJyZWFrIH0KICAgICAgICAgICAgaWYgZXJyICE9IG5pbCB7IGZhaWwoZXJyKTsgcmV0dXJuIH0KICAgICAgICAgICAgbXUuTG9jaygpCiAgICAgICAgICAgIGV2ZW50cyA9IGFwcGVuZChldmVudHMsIGV2ZW50KQogICAgICAgICAgICBtdS5VbmxvY2soKQogICAgICAgIH0KICAgICAgICB3LkhlYWRlcigpLlNldCgiQ29udGVudC1UeXBlIiwgImFwcGxpY2F0aW9uL2pzb24iKQogICAgICAgIF8sIF8gPSBpby5Xcml0ZVN0cmluZyh3LCAie30iKQogICAgfSkpCiAgICBkZWZlciBzcnYuQ2xvc2UoKQogICAgaHR0cENsaWVudCA6PSBzcnYuQ2xpZW50KCkKICAgIGh0dHBDbGllbnQuVGltZW91dCA9IDUgKiB0aW1lLlNlY29uZAogICAgY2xpZW50LCBlcnIgOj0gYXhpb20uTmV3Q2xpZW50KAogICAgICAgIGF4aW9tLlNldE5vRW52KCksIGF4aW9tLlNldE5vVHJhY2luZygpLCBheGlvbS5TZXROb1JldHJ5KCksCiAgICAgICAgYXhpb20uU2V0VVJMKHNydi5VUkwpLCBheGlvbS5TZXRUb2tlbigieGFhdC10ZXN0IiksIGF4aW9tLlNldENsaWVudChodHRwQ2xpZW50KSwKICAgICkKICAgIGlmIGVyciAhPSBuaWwgeyB0LkZhdGFsKGVycikgfQogICAgaGFuZGxlciwgZXJyIDo9IGFkYXB0ZXIuTmV3KGFkYXB0ZXIuU2V0Q2xpZW50KGNsaWVudCksIGFkYXB0ZXIuU2V0RGF0YXNldCgidGVzdCIpKQogICAgaWYgZXJyICE9IG5pbCB7IHQuRmF0YWwoZXJyKSB9CiAgICBkZWZlciBoYW5kbGVyLkNsb3NlKCkKCiAgICB2YXIgcmVmZXJlbmNlIGJ5dGVzLkJ1ZmZlcgogICAgZXhwZWN0ZWRMb2dnZXIgOj0gc2xvZy5OZXcoc2xvZy5OZXdKU09OSGFuZGxlcigmcmVmZXJlbmNlLCBuaWwpKQogICAgYWN0dWFsTG9nZ2VyIDo9IHNsb2cuTmV3KGhhbmRsZXIpCiAgICBlbWl0IDo9IGZ1bmMobG9nZ2VyICpzbG9nLkxvZ2dlcikgewogICAgICAgIGJhc2UgOj0gbG9nZ2VyLldpdGgoInNlcnZpY2UiLCAiYXBpIikKICAgICAgICByZXF1ZXN0IDo9IGJhc2UuV2l0aEdyb3VwKCJyZXF1ZXN0IikuV2l0aCgiaWQiLCAicjEiKQogICAgICAgIHJlcXVlc3QuV2l0aEdyb3VwKCJoYW5kbGVyIikuSW5mbygic2VydmVkIiwgInN0YXR1cyIsIDIwMCkKICAgICAgICByZXF1ZXN0LkluZm8oInJlcXVlc3QiLCAic3RhdHVzIiwgMjAxKQogICAgICAgIGJhc2UuSW5mbygiYmFzZSIsICJzdGF0dXMiLCAyMDIpCiAgICAgICAgbG9nZ2VyLldpdGhHcm91cCgicmVxdWVzdCIpLkluZm8oImNvbnRyb2wiLCAic3RhdHVzIiwgMjAzKQogICAgfQogICAgZW1pdChleHBlY3RlZExvZ2dlcikKICAgIGVtaXQoYWN0dWFsTG9nZ2VyKQogICAgaGFuZGxlci5DbG9zZSgpCgogICAgdmFyIGV4cGVjdGVkIFtdbWFwW3N0cmluZ11hbnkKICAgIGRlYyA6PSBqc29uLk5ld0RlY29kZXIoJnJlZmVyZW5jZSkKICAgIGZvciB7CiAgICAgICAgdmFyIGV2ZW50IG1hcFtzdHJpbmddYW55CiAgICAgICAgZXJyIDo9IGRlYy5EZWNvZGUoJmV2ZW50KQogICAgICAgIGlmIGVyciA9PSBpby5FT0YgeyBicmVhayB9CiAgICAgICAgaWYgZXJyICE9IG5pbCB7IHQuRmF0YWwoZXJyKSB9CiAgICAgICAgZGVsZXRlKGV2ZW50LCBzbG9nLlRpbWVLZXkpCiAgICAgICAgZXhwZWN0ZWQgPSBhcHBlbmQoZXhwZWN0ZWQsIGV2ZW50KQogICAgfQogICAgbXUuTG9jaygpCiAgICBnb3QgOj0gZXZlbnRzCiAgICBzZXJ2ZXJFcnIgOj0gcmVjZWl2ZXJFcnIKICAgIG11LlVubG9jaygpCiAgICBpZiBzZXJ2ZXJFcnIgIT0gbmlsIHsgdC5GYXRhbChzZXJ2ZXJFcnIpIH0KICAgIGlmIGxlbihnb3QpICE9IGxlbihleHBlY3RlZCkgewogICAgICAgIHQuRmF0YWxmKCJyZWNlaXZlZCAlZCBldmVudHMsIHdhbnQgJWQ6ICV2IiwgbGVuKGdvdCksIGxlbihleHBlY3RlZCksIGdvdCkKICAgIH0KICAgIGZvciBpIDo9IHJhbmdlIGdvdCB7CiAgICAgICAgZGVsZXRlKGdvdFtpXSwgIl90aW1lIikKICAgICAgICBvYnNlcnZhdGlvbiwgZXJyIDo9IGpzb24uTWFyc2hhbChtYXBbc3RyaW5nXWFueXsiaW5kZXgiOiBpLCAiYWN0dWFsIjogZ290W2ldLCAiZXhwZWN0ZWQiOiBleHBlY3RlZFtpXSwgInByb2R1Y3RfY29udHJhY3RfbWV0IjogcmVmbGVjdC5EZWVwRXF1YWwoZ290W2ldLCBleHBlY3RlZFtpXSl9KQogICAgICAgIGlmIGVyciAhPSBuaWwgeyB0LkZhdGFsKGVycikgfQogICAgICAgIHQuTG9nZigiT0JTRVJWQVRJT05fSlNPTj0lcyIsIG9ic2VydmF0aW9uKQogICAgICAgIGlmICFyZWZsZWN0LkRlZXBFcXVhbChnb3RbaV0sIGV4cGVjdGVkW2ldKSB7CiAgICAgICAgICAgIHQuRXJyb3JmKCJldmVudCAlZCBoYXMgd3JvbmcgZ3JvdXAgc2NvcGU6IGdvdCAldiwgd2FudCAldiIsIGksIGdvdFtpXSwgZXhwZWN0ZWRbaV0pCiAgICAgICAgfQogICAgfQp9Cg=="))
+          PY
+      - name: Reproduce known scope failures and verify controls
+        run: |
+          python - <<'PY'
+          import subprocess,json,hashlib
+          from pathlib import Path
+          assert subprocess.check_output(["git","rev-parse","HEAD"],text=True).strip()=="49b3101ae7b78c2a334276747e06dbed191c7f6e"
+          assert subprocess.check_output(["git","diff","--name-only"],text=True).strip()==""
+          p=subprocess.run(["go","test","-mod=readonly","./codex_diagnostic","-run","^TestDiagnosticGroupScopes$","-count=1","-v","-json","-timeout","60s"],capture_output=True,text=True)
+          print(p.stdout,flush=True);print(p.stderr,flush=True)
+          observations=[]
+          for line in p.stdout.splitlines():
+           try:event=json.loads(line)
+           except json.JSONDecodeError:continue
+           output=event.get("Output","")
+           if "OBSERVATION_JSON=" in output:
+            observations.append(json.loads(output.split("OBSERVATION_JSON=",1)[1]))
+          report=dict(purpose="BEFORE diagnostic: exit zero confirms known defects, NOT product passing",source_head=subprocess.check_output(["git","rev-parse","HEAD"],text=True).strip(),go_version=subprocess.check_output(["go","version"],text=True).strip(),go_test_exit=p.returncode,observations=observations)
+          print("DIAGNOSTIC_JSON="+json.dumps(report,sort_keys=True),flush=True)
+          assert p.returncode==1 and len(observations)==4
+          assert [o["index"] for o in observations]==list(range(4))
+          assert [o["product_contract_met"] for o in observations]==[False,False,True,True]
+          PY

@@ -1,0 +1,202 @@
+name: Validate slog attribute group scope
+
+on:
+  push:
+    branches: [codex/validate-slog-scope]
+
+permissions:
+  contents: read
+
+jobs:
+  native:
+    name: Native Go ${{ matrix.go }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        go: ["1.26.x", "1.27.x"]
+    env:
+      GOTOOLCHAIN: local
+      GOFLAGS: -mod=readonly
+      CI_CANDIDATE: f5e7d05433f2baa0a4d30becac69ac4b87218fac
+      CI_BASE: 49b3101ae7b78c2a334276747e06dbed191c7f6e
+      CI_MANIFEST: '{"repository":"axiomhq/axiom-go","base":"49b3101ae7b78c2a334276747e06dbed191c7f6e","files":[{"path":"adapters/slog/slog.go","original_git_blob":"fe20abc120541656aa7c9d56f4e2add046306802","original_sha256":"00217a36323ff785ed63a0a35b97427d5b55074454b1b372ebd2b36862144baa","modified_sha256":"089844f2492f43372b0ecab582078f1c97b4e86857c15f857d6dd317d0969a4b","modified_git_blob":"ba08b0cd538af420a9abbf60f6e6722b5971f642"},{"path":"adapters/slog/slog_test.go","original_git_blob":"b1488b84497e487cb89066f31c7cf25e017c827a","original_sha256":"08b5342a6ef303d1c3da8f4871aca7f5484e559bfcbc7df505e1efe0afac500c","modified_sha256":"0cb6676ff8887ab5417643e6b8be9059e850cfaff92844afad1b1541588b569b","modified_git_blob":"e03d1bdfb9c9478ae719af96d024379e7102229b"}]}'
+      CI_FIXTURE_SHA256: fb15db41cd148fd58ea2fdb2c83fb21295a038101c1d708040340c6395ad1ddd
+      CI_FIXTURE_B64: cGFja2FnZSBzbG9nX3Rlc3QKCmltcG9ydCAoCiAgICAiYnl0ZXMiCiAgICAiZW5jb2RpbmcvanNvbiIKICAgICJmbXQiCiAgICAiaW8iCiAgICAibG9nL3Nsb2ciCiAgICAibmV0L2h0dHAiCiAgICAibmV0L2h0dHAvaHR0cHRlc3QiCiAgICAicmVmbGVjdCIKICAgICJzeW5jIgogICAgInRlc3RpbmciCiAgICAidGltZSIKCiAgICBhZGFwdGVyICJnaXRodWIuY29tL2F4aW9taHEvYXhpb20tZ28vYWRhcHRlcnMvc2xvZyIKICAgICJnaXRodWIuY29tL2F4aW9taHEvYXhpb20tZ28vYXhpb20iCiAgICAiZ2l0aHViLmNvbS9rbGF1c3Bvc3QvY29tcHJlc3MvenN0ZCIKKQoKZnVuYyBUZXN0RGlhZ25vc3RpY0dyb3VwU2NvcGVzKHQgKnRlc3RpbmcuVCkgewogICAgdmFyIG11IHN5bmMuTXV0ZXgKICAgIHZhciBldmVudHMgW11tYXBbc3RyaW5nXWFueQogICAgdmFyIHJlY2VpdmVyRXJyIGVycm9yCiAgICBzcnYgOj0gaHR0cHRlc3QuTmV3U2VydmVyKGh0dHAuSGFuZGxlckZ1bmMoZnVuYyh3IGh0dHAuUmVzcG9uc2VXcml0ZXIsIHIgKmh0dHAuUmVxdWVzdCkgewogICAgICAgIGZhaWwgOj0gZnVuYyhlcnIgZXJyb3IpIHsKICAgICAgICAgICAgbXUuTG9jaygpCiAgICAgICAgICAgIHJlY2VpdmVyRXJyID0gZXJyCiAgICAgICAgICAgIG11LlVubG9jaygpCiAgICAgICAgICAgIHcuV3JpdGVIZWFkZXIoaHR0cC5TdGF0dXNCYWRSZXF1ZXN0KQogICAgICAgIH0KICAgICAgICBpZiByLlVSTC5QYXRoICE9ICIvdjEvZGF0YXNldHMvdGVzdC9pbmdlc3QiIHsKICAgICAgICAgICAgZmFpbChmbXQuRXJyb3JmKCJ1bmV4cGVjdGVkIGxvY2FsIHBhdGggJXEiLCByLlVSTC5QYXRoKSkKICAgICAgICAgICAgcmV0dXJuCiAgICAgICAgfQogICAgICAgIHpyLCBlcnIgOj0genN0ZC5OZXdSZWFkZXIoci5Cb2R5KQogICAgICAgIGlmIGVyciAhPSBuaWwgeyBmYWlsKGVycik7IHJldHVybiB9CiAgICAgICAgZGVmZXIgenIuQ2xvc2UoKQogICAgICAgIGRlYyA6PSBqc29uLk5ld0RlY29kZXIoenIpCiAgICAgICAgZm9yIHsKICAgICAgICAgICAgdmFyIGV2ZW50IG1hcFtzdHJpbmddYW55CiAgICAgICAgICAgIGVyciA6PSBkZWMuRGVjb2RlKCZldmVudCkKICAgICAgICAgICAgaWYgZXJyID09IGlvLkVPRiB7IGJyZWFrIH0KICAgICAgICAgICAgaWYgZXJyICE9IG5pbCB7IGZhaWwoZXJyKTsgcmV0dXJuIH0KICAgICAgICAgICAgbXUuTG9jaygpCiAgICAgICAgICAgIGV2ZW50cyA9IGFwcGVuZChldmVudHMsIGV2ZW50KQogICAgICAgICAgICBtdS5VbmxvY2soKQogICAgICAgIH0KICAgICAgICB3LkhlYWRlcigpLlNldCgiQ29udGVudC1UeXBlIiwgImFwcGxpY2F0aW9uL2pzb24iKQogICAgICAgIF8sIF8gPSBpby5Xcml0ZVN0cmluZyh3LCAie30iKQogICAgfSkpCiAgICBkZWZlciBzcnYuQ2xvc2UoKQogICAgaHR0cENsaWVudCA6PSBzcnYuQ2xpZW50KCkKICAgIGh0dHBDbGllbnQuVGltZW91dCA9IDUgKiB0aW1lLlNlY29uZAogICAgY2xpZW50LCBlcnIgOj0gYXhpb20uTmV3Q2xpZW50KAogICAgICAgIGF4aW9tLlNldE5vRW52KCksIGF4aW9tLlNldE5vVHJhY2luZygpLCBheGlvbS5TZXROb1JldHJ5KCksCiAgICAgICAgYXhpb20uU2V0VVJMKHNydi5VUkwpLCBheGlvbS5TZXRUb2tlbigieGFhdC10ZXN0IiksIGF4aW9tLlNldENsaWVudChodHRwQ2xpZW50KSwKICAgICkKICAgIGlmIGVyciAhPSBuaWwgeyB0LkZhdGFsKGVycikgfQogICAgaGFuZGxlciwgZXJyIDo9IGFkYXB0ZXIuTmV3KGFkYXB0ZXIuU2V0Q2xpZW50KGNsaWVudCksIGFkYXB0ZXIuU2V0RGF0YXNldCgidGVzdCIpKQogICAgaWYgZXJyICE9IG5pbCB7IHQuRmF0YWwoZXJyKSB9CiAgICBkZWZlciBoYW5kbGVyLkNsb3NlKCkKCiAgICB2YXIgcmVmZXJlbmNlIGJ5dGVzLkJ1ZmZlcgogICAgZXhwZWN0ZWRMb2dnZXIgOj0gc2xvZy5OZXcoc2xvZy5OZXdKU09OSGFuZGxlcigmcmVmZXJlbmNlLCBuaWwpKQogICAgYWN0dWFsTG9nZ2VyIDo9IHNsb2cuTmV3KGhhbmRsZXIpCiAgICBlbWl0IDo9IGZ1bmMobG9nZ2VyICpzbG9nLkxvZ2dlcikgewogICAgICAgIGJhc2UgOj0gbG9nZ2VyLldpdGgoInNlcnZpY2UiLCAiYXBpIikKICAgICAgICByZXF1ZXN0IDo9IGJhc2UuV2l0aEdyb3VwKCJyZXF1ZXN0IikuV2l0aCgiaWQiLCAicjEiKQogICAgICAgIHJlcXVlc3QuV2l0aEdyb3VwKCJoYW5kbGVyIikuSW5mbygic2VydmVkIiwgInN0YXR1cyIsIDIwMCkKICAgICAgICByZXF1ZXN0LkluZm8oInJlcXVlc3QiLCAic3RhdHVzIiwgMjAxKQogICAgICAgIGJhc2UuSW5mbygiYmFzZSIsICJzdGF0dXMiLCAyMDIpCiAgICAgICAgbG9nZ2VyLldpdGhHcm91cCgicmVxdWVzdCIpLkluZm8oImNvbnRyb2wiLCAic3RhdHVzIiwgMjAzKQogICAgfQogICAgZW1pdChleHBlY3RlZExvZ2dlcikKICAgIGVtaXQoYWN0dWFsTG9nZ2VyKQogICAgaGFuZGxlci5DbG9zZSgpCgogICAgdmFyIGV4cGVjdGVkIFtdbWFwW3N0cmluZ11hbnkKICAgIGRlYyA6PSBqc29uLk5ld0RlY29kZXIoJnJlZmVyZW5jZSkKICAgIGZvciB7CiAgICAgICAgdmFyIGV2ZW50IG1hcFtzdHJpbmddYW55CiAgICAgICAgZXJyIDo9IGRlYy5EZWNvZGUoJmV2ZW50KQogICAgICAgIGlmIGVyciA9PSBpby5FT0YgeyBicmVhayB9CiAgICAgICAgaWYgZXJyICE9IG5pbCB7IHQuRmF0YWwoZXJyKSB9CiAgICAgICAgZGVsZXRlKGV2ZW50LCBzbG9nLlRpbWVLZXkpCiAgICAgICAgZXhwZWN0ZWQgPSBhcHBlbmQoZXhwZWN0ZWQsIGV2ZW50KQogICAgfQogICAgbXUuTG9jaygpCiAgICBnb3QgOj0gZXZlbnRzCiAgICBzZXJ2ZXJFcnIgOj0gcmVjZWl2ZXJFcnIKICAgIG11LlVubG9jaygpCiAgICBpZiBzZXJ2ZXJFcnIgIT0gbmlsIHsgdC5GYXRhbChzZXJ2ZXJFcnIpIH0KICAgIGlmIGxlbihnb3QpICE9IGxlbihleHBlY3RlZCkgewogICAgICAgIHQuRmF0YWxmKCJyZWNlaXZlZCAlZCBldmVudHMsIHdhbnQgJWQ6ICV2IiwgbGVuKGdvdCksIGxlbihleHBlY3RlZCksIGdvdCkKICAgIH0KICAgIGZvciBpIDo9IHJhbmdlIGdvdCB7CiAgICAgICAgZGVsZXRlKGdvdFtpXSwgIl90aW1lIikKICAgICAgICBvYnNlcnZhdGlvbiwgZXJyIDo9IGpzb24uTWFyc2hhbChtYXBbc3RyaW5nXWFueXsiaW5kZXgiOiBpLCAiYWN0dWFsIjogZ290W2ldLCAiZXhwZWN0ZWQiOiBleHBlY3RlZFtpXSwgInByb2R1Y3RfY29udHJhY3RfbWV0IjogcmVmbGVjdC5EZWVwRXF1YWwoZ290W2ldLCBleHBlY3RlZFtpXSl9KQogICAgICAgIGlmIGVyciAhPSBuaWwgeyB0LkZhdGFsKGVycikgfQogICAgICAgIHQuTG9nZigiT0JTRVJWQVRJT05fSlNPTj0lcyIsIG9ic2VydmF0aW9uKQogICAgICAgIGlmICFyZWZsZWN0LkRlZXBFcXVhbChnb3RbaV0sIGV4cGVjdGVkW2ldKSB7CiAgICAgICAgICAgIHQuRXJyb3JmKCJldmVudCAlZCBoYXMgd3JvbmcgZ3JvdXAgc2NvcGU6IGdvdCAldiwgd2FudCAldiIsIGksIGdvdFtpXSwgZXhwZWN0ZWRbaV0pCiAgICAgICAgfQogICAgfQp9Cg==
+    steps:
+      - name: Checkout reviewed signed candidate
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          repository: peterolkhov/axiom-go
+          ref: f5e7d05433f2baa0a4d30becac69ac4b87218fac
+          fetch-depth: 2
+          persist-credentials: false
+
+      - name: Set up native Go
+        uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff
+        with:
+          go-version: ${{ matrix.go }}
+          cache: false
+
+      - name: Verify exact source and absent provider configuration
+        shell: bash
+        run: |
+          set -euo pipefail
+          go version
+          python3 - <<'PY_GUARD'
+          import base64, hashlib, json, os, pathlib, subprocess, sys
+          guard = r'''
+          import base64, hashlib, json, os, pathlib, subprocess, sys
+          def git(*args):
+              return subprocess.check_output(["git", *args], text=True).strip()
+          manifest = json.loads(os.environ["CI_MANIFEST"])
+          assert git("rev-parse", "HEAD") == os.environ["CI_CANDIDATE"]
+          assert git("rev-parse", "HEAD^") == os.environ["CI_BASE"]
+          expected_paths = sorted(item["path"] for item in manifest["files"])
+          assert sorted(git("diff", "--name-only", os.environ["CI_BASE"], "HEAD").splitlines()) == expected_paths
+          changed = git("diff", "--name-only", "HEAD").splitlines()
+          unexpected = sorted(set(changed) - set(expected_paths))
+          if unexpected:
+              print("UNRELATED_TRACKED_CHANGES_JSON=" + json.dumps(unexpected), flush=True)
+              raise SystemExit("unrelated tracked changes are forbidden")
+          for path in changed:
+              raw = pathlib.Path(path).read_bytes()
+              encoded = base64.b64encode(raw).decode()
+              for offset in range(0, len(encoded), 16000):
+                  print("FORMATTED_FILE_JSON=" + json.dumps({"path": path, "sha256": hashlib.sha256(raw).hexdigest(), "offset": offset, "total_base64_length": len(encoded), "base64": encoded[offset:offset + 16000]}, sort_keys=True), flush=True)
+          if changed:
+              raise SystemExit("reviewed files changed; root must update the canonical candidate and rerun")
+          reviewed = []
+          for item in manifest["files"]:
+              raw = pathlib.Path(item["path"]).read_bytes()
+              assert hashlib.sha256(raw).hexdigest() == item["modified_sha256"]
+              assert git("rev-parse", "HEAD:" + item["path"]) == item["modified_git_blob"]
+              assert git("rev-parse", os.environ["CI_BASE"] + ":" + item["path"]) == item["original_git_blob"]
+              reviewed.append({"path": item["path"], "sha256": hashlib.sha256(raw).hexdigest(), "git_blob": item["modified_git_blob"]})
+          print("REVIEWED_SOURCE_JSON=" + json.dumps({"stage": sys.argv[1], "source_head": git("rev-parse", "HEAD"), "go_version": subprocess.check_output(["go", "version"], text=True).strip(), "files": reviewed}, sort_keys=True), flush=True)
+          '''
+          forbidden = sorted(key for key in os.environ if key.startswith(("AXIOM_", "TELEMETRY_")))
+          assert not forbidden, "provider configuration must be absent: " + repr(forbidden)
+          path = pathlib.Path(os.environ["RUNNER_TEMP"]) / "axiom-source-guard.py"
+          path.write_text(guard)
+          PY_GUARD
+          python3 "$RUNNER_TEMP/axiom-source-guard.py" initial
+
+      - name: RED new regression against original owning source
+        shell: bash
+        run: |
+          set -euo pipefail
+          owner=adapters/slog/slog.go
+          fixed="$RUNNER_TEMP/axiom-fixed-slog.go"
+          cp "$owner" "$fixed"
+          trap 'cp "$fixed" "$owner"' EXIT
+          git show "$CI_BASE:$owner" > "$owner"
+          set +e
+          go test ./adapters/slog -run '^TestHandler_GroupScopes$' -count=1 -v > "$RUNNER_TEMP/axiom-red.log" 2>&1
+          test_exit=$?
+          set -e
+          cat "$RUNNER_TEMP/axiom-red.log"
+          cp "$fixed" "$owner"
+          python3 - "$test_exit" <<'PY_RED'
+          import json, os, pathlib, subprocess, sys
+          output = (pathlib.Path(os.environ["RUNNER_TEMP"]) / "axiom-red.log").read_text()
+          code = int(sys.argv[1])
+          assertion_failure = "--- FAIL: TestHandler_GroupScopes/interleaved_attributes_and_groups" in output and "Not equal:" in output
+          build_failure = "[build failed]" in output or "undefined:" in output or "syntax error:" in output
+          summary = {"phase": "RED", "source_head": os.environ["CI_CANDIDATE"], "owner_source_base": os.environ["CI_BASE"], "go_version": subprocess.check_output(["go", "version"], text=True).strip(), "go_test_exit": code, "interleaved_scope_assertion_failed": assertion_failure, "build_failure": build_failure}
+          print("RED_RESULT_JSON=" + json.dumps(summary, sort_keys=True), flush=True)
+          assert code == 1 and assertion_failure and not build_failure, "RED must demonstrate the regression assertion, not a build/setup error"
+          PY_RED
+          python3 "$RUNNER_TEMP/axiom-source-guard.py" restored-after-red
+
+      - name: GREEN package tests with race detection
+        shell: bash
+        run: |
+          set -euo pipefail
+          go test -race ./adapters/slog -count=1 -v
+          python3 "$RUNNER_TEMP/axiom-source-guard.py" package-race
+
+      - name: Full upstream default unit suite with race and shuffle
+        shell: bash
+        run: |
+          set -euo pipefail
+          make test
+          python3 "$RUNNER_TEMP/axiom-source-guard.py" full-default-unit-suite
+
+      - name: Native vet
+        shell: bash
+        run: |
+          set -euo pipefail
+          go vet ./...
+          python3 "$RUNNER_TEMP/axiom-source-guard.py" vet
+
+      - name: Pinned upstream format check
+        shell: bash
+        run: |
+          set -euo pipefail
+          tool_exit=0
+          go tool golangci-lint fmt || tool_exit=$?
+          echo "FORMAT_TOOL_EXIT=$tool_exit"
+          python3 "$RUNNER_TEMP/axiom-source-guard.py" format
+          exit "$tool_exit"
+
+      - name: Pinned upstream lint
+        shell: bash
+        run: |
+          set -euo pipefail
+          go tool golangci-lint run
+          python3 "$RUNNER_TEMP/axiom-source-guard.py" lint
+
+      - name: Upstream generation and clean tracked diff
+        shell: bash
+        run: |
+          set -euo pipefail
+          make generate
+          python3 "$RUNNER_TEMP/axiom-source-guard.py" generation
+          git diff --exit-code
+
+      - name: Actual whole SDK ingestion after all upstream gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 "$RUNNER_TEMP/axiom-source-guard.py" before-whole-sdk-diagnostic
+          python3 - <<'PY_FIXTURE'
+          import base64, hashlib, os, pathlib
+          raw = base64.b64decode(os.environ["CI_FIXTURE_B64"], validate=True)
+          assert hashlib.sha256(raw).hexdigest() == os.environ["CI_FIXTURE_SHA256"]
+          target = pathlib.Path("codex_diagnostic")
+          assert not target.exists(), "isolated diagnostic folder already exists"
+          target.mkdir()
+          (target / "group_scope_test.go").write_bytes(raw)
+          print("UNCHANGED_FIXTURE_SHA256=" + hashlib.sha256(raw).hexdigest())
+          PY_FIXTURE
+          set +e
+          go test ./codex_diagnostic -run '^TestDiagnosticGroupScopes$' -count=1 -v > "$RUNNER_TEMP/axiom-after.log" 2>&1
+          test_exit=$?
+          set -e
+          cat "$RUNNER_TEMP/axiom-after.log"
+          python3 - "$test_exit" <<'PY_AFTER'
+          import json, os, pathlib, re, subprocess, sys
+          output = (pathlib.Path(os.environ["RUNNER_TEMP"]) / "axiom-after.log").read_text()
+          observations = [json.loads(value) for value in re.findall(r"OBSERVATION_JSON=(\{[^\n]*\})", output)]
+          code = int(sys.argv[1])
+          result = {"phase": "AFTER", "source_head": os.environ["CI_CANDIDATE"], "go_version": subprocess.check_output(["go", "version"], text=True).strip(), "go_test_exit": code, "fixture_sha256": os.environ["CI_FIXTURE_SHA256"], "observations": observations}
+          print("AFTER_RESULT_JSON=" + json.dumps(result, sort_keys=True), flush=True)
+          assert code == 0, "whole SDK native test failed"
+          assert len(observations) == 4 and sorted(item["index"] for item in observations) == [0, 1, 2, 3]
+          assert all(item["product_contract_met"] is True and item["actual"] == item["expected"] for item in observations), "all four actual event contracts must match"
+          PY_AFTER
+          python3 "$RUNNER_TEMP/axiom-source-guard.py" after-whole-sdk-diagnostic
+
+      - name: Final source invariant even after a failed gate
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          if test -f "$RUNNER_TEMP/axiom-source-guard.py"; then
+            python3 "$RUNNER_TEMP/axiom-source-guard.py" final
+          else
+            echo "Source verification did not initialize; earlier gate failure is retained."
+            exit 1
+          fi
